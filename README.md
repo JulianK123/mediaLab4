@@ -24,8 +24,8 @@ The **threshold slider** (range 10–200) controls the high threshold in real ti
 
 | Browser | Version | OS | Result |
 |---|---|---|---|
-| Google Chrome | 124.0.6367.82 | Windows 11 | ✅ Works |
-| Mozilla Firefox | 125.0.2 | Windows 11 | ✅ Works |
+| Google Chrome | 124.0.6367.82 | Windows 11 | Works |
+| Mozilla Firefox | 125.0.2 | Windows 11 | Works |
 
 ## SSL / Server Setup
 WebRTC requires HTTPS. To run locally:
