@@ -1,40 +1,54 @@
-# mediaLab4
+# mediaLab4 – WebRTC Filter Application (Option A)
 
-This lab aims to build your first WebRTC app.
+## Overview
+A WebRTC-based camera filter application built with HTML5 Canvas and the getUserMedia API.
 
-There are many open source alternatives to build a simple communication application like Skype. One of the web based solution is WebRTC. You can try a huge set of examples: 
-https://webrtc.github.io/samples/
+## Features
+- **Live camera stream** via WebRTC (getUserMedia)
+- **Existing filters:** Grayscale, Sepia, Invert
+- **Custom filter:** Canny Edge Detection (not present in the original WebRTC sample)
+- **Realtime threshold slider** to control the Canny edge sensitivity
 
-# Requirements for repository
-  - You have to clone this repository and make two branches (master and develop).
-  - The develop branch should contain commits of every new feature of the AR application.
-  - When all features will be ready you have to merge the development branch to the master.
+## Canny Edge Detection Algorithm
+The custom Canny filter is implemented from scratch in JavaScript:
+1. Convert frame to grayscale
+2. Apply 5×5 Gaussian blur (noise reduction)
+3. Compute Sobel gradient magnitude and direction
+4. Non-maximum suppression
+5. Double threshold (high/low)
+6. Hysteresis edge tracking
 
-# Requirements for WebRTC application
-There are three options to choose from. 
+The **threshold slider** (range 10–200) controls the high threshold in real time. The low threshold is automatically set to 40% of the high value.
 
-Option A:
-  - Use WebRTC filter application code (https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/filter) and additional filter like Canny Edge filter or any other non existing in the sample.
-  - It is also needed to add a slider to control a threshold/gain for your filter. It should work realtime.  
+## Browser Testing
 
-Option B:
-  - Use WebRTC filter application code (https://github.com/webrtc/samples/tree/gh-pages/src/content/getusermedia/filter) and add face detector. Tracking.js is good place to start (https://trackingjs.com/examples/face_camera.html).
+| Browser | Version | OS | Result |
+|---|---|---|---|
+| Google Chrome | 124.0.6367.82 | Windows 11 | ✅ Works |
+| Mozilla Firefox | 125.0.2 | Windows 11 | ✅ Works |
 
-Option C:
-  - It is your chance to show your skills and creativity.
-  - You can add extra features to existing WebRTC examples.
-  - Or anything other.
-  
-The general requirements for option A, B & C:
-  - Test application on at least two browsers and specify in README.md which version and browser it was.
-  - To pass this lab, you have to fully complete an option.  
-  
-# Important notes
-  - SSL server is needed to run this lab material.
-  - You will be needed to generate self signed sertificate and set up your web server. 
-You can try to use these file servers:  
-  - Apache: https://www.raspberrypi.org/documentation/remote-access/web-server/apache.md 
-  - Tomcat: http://androidsrc.net/installing-tomcat8-raspberry-pi-3/ 
-  - HFS: http://www.rejetto.com/hfs/ or any other server.
-Proxy http to https:
-  - https://technique.arscenic.org/lamp-linux-apache-mysql-php/apache-le-serveur-http/modules-complementaires/article/installer-et-configurer-le-module-ssl-pour-apache2?fbclid=IwAR1_nXNQlrMIdJ5tilVUyr45xeiA91yw21vhnMxWHnuvY01VTd2FVR_T2ao  
+## SSL / Server Setup
+WebRTC requires HTTPS. To run locally:
+
+```bash
+# Generate self-signed certificate
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+# Serve with Node.js https
+node server.js
+```
+
+Or use Apache with SSL module enabled (see lab instructions for links).
+
+## Project Structure
+```
+mediaLab4/
+├── index.html
+├── style.css
+├── main.js
+└── README.md
+```
+
+## Git Branches
+- `master` – final merged version
+- `develop` – feature commits

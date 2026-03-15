@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WebRTC Filter App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>WebRTC Camera Filter App</h1>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas"></canvas>
+
+  <div class="controls">
+    <h2>Select Filter</h2>
+    <div class="filter-buttons">
+      <button onclick="setFilter('none')" class="active">None</button>
+      <button onclick="setFilter('grayscale')">Grayscale</button>
+      <button onclick="setFilter('sepia')">Sepia</button>
+      <button onclick="setFilter('invert')">Invert</button>
+      <button onclick="setFilter('canny')">Canny Edge</button>
+    </div>
+
+    <div class="slider-section" id="sliderSection" style="display:none">
+      <label for="thresholdSlider">Canny Threshold: <span id="thresholdValue">50</span></label>
+      <input type="range" id="thresholdSlider" min="10" max="200" value="50" oninput="updateThreshold(this.value)">
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
