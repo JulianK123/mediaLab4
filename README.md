@@ -27,28 +27,6 @@ The **threshold slider** (range 10–200) controls the high threshold in real ti
 | Google Chrome | 124.0.6367.82 | Windows 11 | Works |
 | Mozilla Firefox | 125.0.2 | Windows 11 | Works |
 
-## SSL / Server Setup
-WebRTC requires HTTPS. To run locally:
-
-```bash
-# Generate self-signed certificate
-openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
-
-# Serve with Node.js https
-node server.js
-```
-
-Or use Apache with SSL module enabled (see lab instructions for links).
-
-## Project Structure
-```
-mediaLab4/
-├── index.html
-├── style.css
-├── main.js
-└── README.md
-```
-
 ## Git Branches
 - `master` – final merged version
 - `develop` – feature commits
