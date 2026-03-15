@@ -6,9 +6,7 @@ body {
   padding: 20px;
 }
 
-h1 {
-  color: #e94560;
-}
+h1 { color: #e94560; }
 
 video, canvas {
   width: 640px;
@@ -17,4 +15,27 @@ video, canvas {
   border-radius: 8px;
   display: block;
   margin: 10px auto;
+}
+
+.controls {
+  margin: 20px auto;
+  max-width: 700px;
+}
+
+.filter-buttons button {
+  margin: 6px;
+  padding: 10px 18px;
+  background: #16213e;
+  color: #eee;
+  border: 2px solid #e94560;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.filter-buttons button:hover,
+.filter-buttons button.active {
+  background: #e94560;
+  color: #fff;
 }
