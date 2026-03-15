@@ -19,6 +19,11 @@
       <button onclick="setFilter('invert')">Invert</button>
       <button onclick="setFilter('canny')">Canny Edge</button>
     </div>
+
+    <div class="slider-section" id="sliderSection" style="display:none">
+      <label for="thresholdSlider">Canny Threshold: <span id="thresholdValue">50</span></label>
+      <input type="range" id="thresholdSlider" min="10" max="200" value="50" oninput="updateThreshold(this.value)">
+    </div>
   </div>
 
   <script src="main.js"></script>

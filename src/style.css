@@ -39,3 +39,19 @@ video, canvas {
   background: #e94560;
   color: #fff;
 }
+
+.slider-section {
+  margin-top: 20px;
+}
+
+.slider-section label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+input[type="range"] {
+  width: 400px;
+  accent-color: #e94560;
+  cursor: pointer;
+}

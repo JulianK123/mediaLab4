@@ -3,12 +3,14 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
+const sliderSection = document.getElementById('sliderSection');
+const thresholdValue = document.getElementById('thresholdValue');
 
 canvas.width = 640;
 canvas.height = 480;
 
 let currentFilter = 'none';
-let cannyThreshold = 50; // default, will be updated by slider
+let cannyThreshold = 50;
 
 navigator.mediaDevices.getUserMedia({ video: true, audio: false })
   .then(stream => {
@@ -22,6 +24,12 @@ function setFilter(filter) {
   currentFilter = filter;
   document.querySelectorAll('.filter-buttons button').forEach(b => b.classList.remove('active'));
   event.target.classList.add('active');
+  sliderSection.style.display = (filter === 'canny') ? 'block' : 'none';
+}
+
+function updateThreshold(val) {
+  cannyThreshold = parseInt(val);
+  thresholdValue.textContent = val;
 }
 
 // --- Standard filters ---
@@ -51,19 +59,15 @@ function toGrayscaleArray(data, w, h) {
 }
 
 function gaussianBlur(gray, w, h) {
-  // 5x5 Gaussian kernel
   const kernel = [2,4,5,4,2, 4,9,12,9,4, 5,12,15,12,5, 4,9,12,9,4, 2,4,5,4,2];
   const kSum = 159;
   const out = new Float32Array(w * h);
   for (let y = 2; y < h-2; y++) {
     for (let x = 2; x < w-2; x++) {
-      let sum = 0;
-      let ki = 0;
-      for (let ky = -2; ky <= 2; ky++) {
-        for (let kx = -2; kx <= 2; kx++) {
+      let sum = 0, ki = 0;
+      for (let ky = -2; ky <= 2; ky++)
+        for (let kx = -2; kx <= 2; kx++)
           sum += gray[(y+ky)*w + (x+kx)] * kernel[ki++];
-        }
-      }
       out[y*w+x] = sum / kSum;
     }
   }
@@ -93,18 +97,12 @@ function nonMaxSuppression(mag, dir, w, h) {
   const out = new Float32Array(w * h);
   for (let y = 1; y < h-1; y++) {
     for (let x = 1; x < w-1; x++) {
-      const angle = dir[y*w+x] * 180 / Math.PI;
-      const normAngle = ((angle % 180) + 180) % 180;
-      let q = 255, r = 255;
-      if (normAngle < 22.5 || normAngle >= 157.5) {
-        q = mag[y*w+(x+1)]; r = mag[y*w+(x-1)];
-      } else if (normAngle < 67.5) {
-        q = mag[(y+1)*w+(x-1)]; r = mag[(y-1)*w+(x+1)];
-      } else if (normAngle < 112.5) {
-        q = mag[(y+1)*w+x]; r = mag[(y-1)*w+x];
-      } else {
-        q = mag[(y-1)*w+(x-1)]; r = mag[(y+1)*w+(x+1)];
-      }
+      const angle = ((dir[y*w+x] * 180 / Math.PI) % 180 + 180) % 180;
+      let q, r;
+      if (angle < 22.5 || angle >= 157.5)       { q = mag[y*w+(x+1)]; r = mag[y*w+(x-1)]; }
+      else if (angle < 67.5)  { q = mag[(y+1)*w+(x-1)]; r = mag[(y-1)*w+(x+1)]; }
+      else if (angle < 112.5) { q = mag[(y+1)*w+x];     r = mag[(y-1)*w+x]; }
+      else                    { q = mag[(y-1)*w+(x-1)]; r = mag[(y+1)*w+(x+1)]; }
       out[y*w+x] = (mag[y*w+x] >= q && mag[y*w+x] >= r) ? mag[y*w+x] : 0;
     }
   }
@@ -138,17 +136,16 @@ function hysteresisTracking(edges, w, h) {
   return edges;
 }
 
-function applyCanny(imageData, w, h, threshold) {
+function applyCanny(imageData, w, h) {
   const data = imageData.data;
-  const high = threshold;
-  const low = threshold * 0.4;
+  const high = cannyThreshold;
+  const low  = cannyThreshold * 0.4;
   let gray = toGrayscaleArray(data, w, h);
   gray = gaussianBlur(gray, w, h);
   const { mag, dir } = sobelGradient(gray, w, h);
   const nms = nonMaxSuppression(mag, dir, w, h);
   let edges = doubleThreshold(nms, w, h, low, high);
   edges = hysteresisTracking(edges, w, h);
-  // Write edges back as white-on-black
   for (let i = 0; i < w*h; i++) {
     data[i*4] = data[i*4+1] = data[i*4+2] = edges[i];
     data[i*4+3] = 255;
@@ -162,7 +159,7 @@ function drawFrame() {
   if (currentFilter !== 'none') {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     if (currentFilter === 'canny') {
-      ctx.putImageData(applyCanny(imageData, canvas.width, canvas.height, cannyThreshold), 0, 0);
+      ctx.putImageData(applyCanny(imageData, canvas.width, canvas.height), 0, 0);
     } else {
       applyStandardFilter(imageData.data);
       ctx.putImageData(imageData, 0, 0);
